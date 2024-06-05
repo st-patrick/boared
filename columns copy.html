@@ -49,6 +49,31 @@
     </div>
     
     <script>
+
+        // Retrieve item positions from localStorage
+        const itemPositions = JSON.parse(localStorage.getItem('itemPositions'));
+        if (itemPositions) {
+            Object.entries(itemPositions).forEach(([columnId, itemIds]) => {
+                const column = document.getElementById(columnId);
+                if (column) {
+                // Remove existing items
+                column.innerHTML = '';
+                // Insert items in the specified order
+                itemIds.forEach(itemId => {
+                    const item = document.createElement('div');
+                    item.classList.add('item');
+                    item.draggable = true;
+                    item.textContent = itemId;
+                    item.addEventListener('dragstart', dragStart);
+                    item.addEventListener('dragend', dragEnd);
+                    column.appendChild(item);
+
+
+                });
+                }
+            });
+        }
+    
         const items = document.querySelectorAll('.item');
         const columns = document.querySelectorAll('.column');
         let draggedItem = null;
@@ -64,8 +89,10 @@
             column.addEventListener('dragenter', dragEnter);
             column.addEventListener('dragleave', dragLeave);
             column.addEventListener('drop', drop);
+            column.addEventListener('drop', saveItemPositions);
         });
-        
+
+
         // Drag functions
         function dragStart() {
             draggedItem = this;
@@ -119,6 +146,21 @@
 
             this.style.backgroundColor = '#f2f2f2';
         }
+
+        // ...
+
+        // Function to save item positions to localStorage
+        function saveItemPositions() {
+            const itemPositions = {};
+            columns.forEach(column => {
+                const columnId = column.id;
+                const items = column.querySelectorAll('.item');
+                const itemIds = Array.from(items).map(item => item.textContent);
+                itemPositions[columnId] = itemIds;
+            });
+            localStorage.setItem('itemPositions', JSON.stringify(itemPositions));
+        }
+
     </script>
 </body>
 </html>
