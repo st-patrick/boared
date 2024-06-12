@@ -80,33 +80,38 @@
         console.log(itemPositions);
         if (itemPositions) {
             Object.entries(itemPositions).forEach(([columnId, { items, heading }]) => {
-                console.log(columnId, items, heading);
-
-                const column = document.getElementById(columnId);
-                if (column) {
-                    // Remove existing items
-                    column.innerHTML = '';
-                    
-                    // Insert heading
-                    const h1 = document.createElement('h1');
-                    h1.contentEditable = true;
-                    h1.textContent = heading;
-                    column.appendChild(h1);
-                    
-                    // Insert items in the specified order
-                    items.forEach(itemId => {
-                        const item = document.createElement('div');
-                        item.classList.add('item');
-                        item.draggable = true;
-                        //item.contentEditable = true;
-                        item.textContent = itemId;
-                        item.addEventListener('dragstart', dragStart);
-                        item.addEventListener('dragend', dragEnd);
-                        column.appendChild(item);
-                    });
-                }
+            console.log(columnId, items, heading);
+            const column = document.getElementById(columnId);
+            if (column) {
+                // Remove existing items
+                column.innerHTML = '';
+                
+                // Insert heading
+                const h1 = document.createElement('h1');
+                h1.contentEditable = true;
+                h1.textContent = heading;
+                column.appendChild(h1);
+                
+                // Insert items in the specified order
+                items.forEach(itemId => {
+                const item = document.createElement('div');
+                item.classList.add('item');
+                item.draggable = true;
+                
+                // Create span element for text
+                const span = document.createElement('span');
+                span.textContent = itemId;
+                span.contentEditable = true;
+                item.appendChild(span);
+                
+                item.addEventListener('dragstart', dragStart);
+                item.addEventListener('dragend', dragEnd);
+                column.appendChild(item);
+                });
+            }
             });
         }
+
 
     
         const items = document.querySelectorAll('.item');
