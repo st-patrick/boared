@@ -18,6 +18,7 @@
             display: flex;
             margin-bottom: 10px;
             padding: 10px;
+            padding-bottom: 30px;
             background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -27,11 +28,10 @@
             margin-bottom: 10px;
             padding: 10px;
             background-color: red;
-            border: 1px dotted #ccc;
+            border: 2px dotted black;
             border-radius: 5px;      
             pointer-events: none;
             height: 30px;
-            opacity: 0.5; 
         }
 
         body {
@@ -181,8 +181,6 @@
             } else {
                 this.insertBefore(draggedItem, draggedBefore);
             }
-
-            this.style.backgroundColor = '#f2f2f2';
         }
 
 
