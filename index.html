@@ -219,6 +219,36 @@
             column.appendChild(item);
         }
 
+        // Custom context menu
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+            
+            const card = event.target.closest('.item');
+            if (card) {
+            const contextMenu = document.createElement('div');
+            contextMenu.classList.add('context-menu');
+            
+            const deleteOption = document.createElement('div');
+            deleteOption.textContent = 'Delete Card';
+            deleteOption.classList.add('context-menu-option');
+            deleteOption.addEventListener('click', function() {
+                card.remove();
+                contextMenu.remove();
+            });
+            
+            contextMenu.appendChild(deleteOption);
+            
+            document.body.appendChild(contextMenu);
+            
+            contextMenu.style.position = 'fixed'; // Set position to fixed
+            contextMenu.style.left = event.clientX + 'px';
+            contextMenu.style.top = event.clientY + 'px';
+            
+            document.addEventListener('click', function() {
+                contextMenu.remove();
+            }, { once: true });
+            }
+        });
 
         // Function to save item positions and h1 headings to localStorage
         function saveItemPositions() {
