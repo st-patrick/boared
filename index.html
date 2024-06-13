@@ -49,6 +49,8 @@
 
 <body style="background-color: aqua;">
     <div class="container" style="display: flex; flex-direction: row; width: 100%; background-color: beige;">
+        <button class="add-card-button" onclick="addCard()">+</button>
+
         <div class="column" id="column1">
             <h1 contenteditable>Backlog</h1>
             <div class="item" draggable contenteditable>Item 1</div>
@@ -197,6 +199,26 @@
 
             this.style.backgroundColor = '#f2f2f2';
         }
+
+
+        // add a new card in first column
+        function addCard() {
+            const column = document.getElementById('column1');
+            const item = document.createElement('div');
+            item.classList.add('item');
+            item.draggable = true;
+            
+            // Create span element for text
+            const span = document.createElement('span');
+            span.textContent = 'New Item';
+            span.contentEditable = true;
+            item.appendChild(span);
+            
+            item.addEventListener('dragstart', dragStart);
+            item.addEventListener('dragend', dragEnd);
+            column.appendChild(item);
+        }
+
 
         // Function to save item positions and h1 headings to localStorage
         function saveItemPositions() {
