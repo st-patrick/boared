@@ -7,7 +7,6 @@
             display: flex;
             width: 200px;
             padding: 10px;
-            background-color: rgb(242, 242, 242);
             border-radius: 5px;
 
             flex-direction: column;
@@ -48,7 +47,7 @@
 
 
 <body style="background-color: aqua;">
-    <div class="container" style="display: flex; flex-direction: row; width: 100%; background-color: beige;">
+    <div class="container" style="display: flex; flex-direction: row; width: 100%;">
         <button class="add-card-button" onclick="addCard()">+</button>
 
         <div class="column" id="column1">
@@ -58,19 +57,25 @@
             <div class="item" draggable contenteditable>Item 3</div>
             <div class="item" draggable contenteditable>Item 4</div>
         </div>
-        
+  
         <div class="column" id="column2">
             <h1 contenteditable>Backlog</h1>
             <div class="item" draggable contenteditable>Item 5</div>
             <div class="item" draggable contenteditable>Item 6</div>        
         </div>
-
+        
         <div class="column" id="column3">
+            <h1 contenteditable>Backlog</h1>
+            <div class="item" draggable contenteditable>Item 5</div>
+            <div class="item" draggable contenteditable>Item 6</div>        
+        </div>
+
+        <div class="column" id="column4">
             <h1 contenteditable>Backlog</h1>
             <div class="item" draggable contenteditable>Item 7</div> 
         </div>
 
-        <div class="column" id="column4">
+        <div class="column" id="column5">
             <h1 contenteditable>Backlog</h1>
             <div class="item" draggable contenteditable>Item 8</div> 
         </div>
@@ -96,36 +101,16 @@
                 
                 // Insert items in the specified order
                 items.forEach(itemId => {
-                const item = document.createElement('div');
-                item.classList.add('item');
-                item.draggable = true;
-                
-                // Create span element for text
-                const span = document.createElement('span');
-                span.textContent = itemId;
-                span.contentEditable = true;
-                item.appendChild(span);
-                
-                item.addEventListener('dragstart', dragStart);
-                item.addEventListener('dragend', dragEnd);
-                column.appendChild(item);
+                    column.appendChild(returnCardElement(itemId));
                 });
             }
             });
         }
 
-
-    
-        const items = document.querySelectorAll('.item');
         const columns = document.querySelectorAll('.column');
         let draggedItem = null;
         
-        // Add event listeners for drag and drop functionality
-        items.forEach(item => {
-            item.addEventListener('dragstart', dragStart);
-            item.addEventListener('dragend', dragEnd);
-        });
-        
+
         columns.forEach(column => {
             column.addEventListener('dragover', dragOver);
             column.addEventListener('dragenter', dragEnter);
@@ -204,19 +189,26 @@
         // add a new card in first column
         function addCard() {
             const column = document.getElementById('column1');
+            column.appendChild(returnCardElement());
+        }
+
+        function returnCardElement(placeholder = "New Item") {
             const item = document.createElement('div');
             item.classList.add('item');
             item.draggable = true;
             
             // Create span element for text
             const span = document.createElement('span');
-            span.textContent = 'New Item';
+            span.textContent = placeholder;
             span.contentEditable = true;
             item.appendChild(span);
             
             item.addEventListener('dragstart', dragStart);
             item.addEventListener('dragend', dragEnd);
-            column.appendChild(item);
+            span.addEventListener('focus', onSpanFocus);
+            span.addEventListener('blur', onSpanBlur);
+
+            return item;
         }
 
         // Custom context menu
@@ -269,7 +261,31 @@
                 saveItemPositions();
                 animateBorder();
             }
+
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.contentEditable && activeElement.tagName !== 'BODY') {
+                    activeElement.blur(); // Save and defocus
+                    saveItemPositions();
+                } else {
+                    addCard(); // Create a new card
+                    const newCard = document.querySelector('.item:last-child');
+                    newCard.querySelector('span').focus(); // Enter content editing
+                    document.execCommand('selectAll',false,null); // Select the entire inner text
+                }
+            }
         });
+
+        const cards = document.querySelectorAll('.item');
+
+
+        function onSpanFocus() {
+            this.parentElement.draggable = false;
+        }
+        function onSpanBlur() {
+            this.parentElement.draggable = true;
+        }
 
 
         // Function to animate the border
