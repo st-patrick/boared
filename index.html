@@ -185,7 +185,6 @@
         // Drag functions
         function dragStart() {
             draggedItem = this;
-            PLACEHOLDER.style.display = 'block';
             DRAG_PLACEHOLDER.classList.add('dragging');
             DRAG_PLACEHOLDER.style.height = draggedItem.offsetHeight-20 + 'px';
             DRAG_PLACEHOLDER.style.width = draggedItem.offsetWidth-20 + 'px';
@@ -194,6 +193,7 @@
             console.log(DRAG_PLACEHOLDER.style.height);
             console.log(DRAG_PLACEHOLDER.style.width);
             this.style.display = 'none';
+            PLACEHOLDER.style.display = 'block';
         }
 
       
