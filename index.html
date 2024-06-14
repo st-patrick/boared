@@ -42,6 +42,41 @@
             min-height: calc(100vh - 20px);
             margin:0;
         }
+
+        .dragging {
+            animation: begindrag .8s ease forwards;
+            border: 2px solid red;
+            transform: rotate(0.2turn);
+        }
+
+        @keyframes begindrag {
+            0% {
+                transform: rotate(0deg)
+            }
+            10% {
+                transform: rotate(-8deg)
+            }
+            30% {
+                transform: rotate(6deg)
+            }
+            55% {
+                transform: rotate(-3deg)
+            }
+            80% {
+                transform: rotate(1deg)
+            }
+            100% {
+                transform: rotate(-1deg)
+            }
+        }
+
+        .drag-placeholder {
+            position: fixed;
+            display: none;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -87,7 +122,6 @@
         console.log(itemPositions);
         if (itemPositions) {
             Object.entries(itemPositions).forEach(([columnId, { items, heading }]) => {
-            console.log(columnId, items, heading);
             const column = document.getElementById(columnId);
             if (column) {
                 // Remove existing items
@@ -107,9 +141,12 @@
             });
         }
 
+
+        const PLACEHOLDER = document.createElement('div');
+        PLACEHOLDER.classList.add('placeholder');
+
         const columns = document.querySelectorAll('.column');
         let draggedItem = null;
-        
 
         columns.forEach(column => {
             column.addEventListener('dragover', dragOver);
@@ -120,27 +157,43 @@
         });
 
 
+        document.addEventListener('dragover', dragoverUniversal);
+        document.addEventListener('dragend', dragEndUniversal);
+        const DRAG_PLACEHOLDER = document.createElement('div');
+        DRAG_PLACEHOLDER.classList.add('drag-placeholder');
+        document.body.appendChild(DRAG_PLACEHOLDER);
+
+        function dragoverUniversal(e) {
+            const draggedItemText = draggedItem.querySelector('span').textContent;
+            DRAG_PLACEHOLDER.style.display = 'block';
+            DRAG_PLACEHOLDER.textContent = draggedItemText;
+            DRAG_PLACEHOLDER.style.left = e.clientX + 'px';
+            DRAG_PLACEHOLDER.style.top = e.clientY + 'px';
+        }
+
+        function dragEndUniversal() {
+            console.log(DRAG_PLACEHOLDER.offsetHeight);
+            console.log(DRAG_PLACEHOLDER.offsetWidth);
+            DRAG_PLACEHOLDER.style.display = 'none';
+            PLACEHOLDER.style.display = 'none';
+            draggedItem.style.display = 'block';
+            draggedItem = null;
+            DRAG_PLACEHOLDER.classList.remove('dragging');
+        }
+
         // Drag functions
         function dragStart() {
             draggedItem = this;
-            setTimeout(() => {
-                PLACEHOLDER.style.display = 'block';
-                this.style.display = 'none';
-            }, 0);
-        }
-        
-        function dragEnd() {
-            setTimeout(() => {
-                PLACEHOLDER.style.display = 'none';
-                draggedItem.style.display = 'block';
-                draggedItem = null;
-            }, 0);
+            PLACEHOLDER.style.display = 'block';
+            DRAG_PLACEHOLDER.classList.add('dragging');
+            DRAG_PLACEHOLDER.style.height = draggedItem.offsetHeight-20 + 'px';
+            DRAG_PLACEHOLDER.style.width = draggedItem.offsetWidth-20 + 'px';
+            console.log(DRAG_PLACEHOLDER.style.height);
+            console.log(DRAG_PLACEHOLDER.style.width);
+            this.style.display = 'none';
         }
 
-
-        const PLACEHOLDER = document.createElement('div');
-        PLACEHOLDER.classList.add('placeholder');
-        
+      
         function dragOver(e) {
             e.preventDefault();
 
@@ -202,7 +255,6 @@
             item.appendChild(span);
             
             item.addEventListener('dragstart', dragStart);
-            item.addEventListener('dragend', dragEnd);
             span.addEventListener('focus', onSpanFocus);
             span.addEventListener('blur', onSpanBlur);
 
@@ -300,6 +352,7 @@
             body.style.borderColor = 'hsl(120, 100%, 0%)'; // Change border color to another hue
             }, borderSpeed * 1500);            
         }
+
 
     </script>
 </body>
