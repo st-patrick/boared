@@ -76,6 +76,7 @@
             background-color: #fff;
             padding: 10px;
             border-radius: 5px;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -149,9 +150,8 @@
         let draggedItem = null;
 
         columns.forEach(column => {
-            column.addEventListener('dragover', dragOver);
-            column.addEventListener('dragenter', dragEnter);
-            column.addEventListener('dragleave', dragLeave);
+            column.addEventListener('dragover', dragOverColumn);
+            column.addEventListener('dragenter', dragEnterColumn);
             column.addEventListener('drop', drop);
             column.addEventListener('drop', saveItemPositions);
         });
@@ -161,14 +161,15 @@
         document.addEventListener('dragend', dragEndUniversal);
         const DRAG_PLACEHOLDER = document.createElement('div');
         DRAG_PLACEHOLDER.classList.add('drag-placeholder');
+        let mouseToDraggedItemOffsetX, mouseToDraggedItemOffsetY = 0;
         document.body.appendChild(DRAG_PLACEHOLDER);
 
         function dragoverUniversal(e) {
             const draggedItemText = draggedItem.querySelector('span').textContent;
             DRAG_PLACEHOLDER.style.display = 'block';
             DRAG_PLACEHOLDER.textContent = draggedItemText;
-            DRAG_PLACEHOLDER.style.left = e.clientX + 'px';
-            DRAG_PLACEHOLDER.style.top = e.clientY + 'px';
+            DRAG_PLACEHOLDER.style.left = e.clientX - mouseToDraggedItemOffsetX + 'px';
+            DRAG_PLACEHOLDER.style.top = e.clientY - mouseToDraggedItemOffsetY + 'px';
         }
 
         function dragEndUniversal() {
@@ -188,13 +189,15 @@
             DRAG_PLACEHOLDER.classList.add('dragging');
             DRAG_PLACEHOLDER.style.height = draggedItem.offsetHeight-20 + 'px';
             DRAG_PLACEHOLDER.style.width = draggedItem.offsetWidth-20 + 'px';
+            mouseToDraggedItemOffsetX = event.clientX - draggedItem.getBoundingClientRect().left;
+            mouseToDraggedItemOffsetY = event.clientY - draggedItem.getBoundingClientRect().top;
             console.log(DRAG_PLACEHOLDER.style.height);
             console.log(DRAG_PLACEHOLDER.style.width);
             this.style.display = 'none';
         }
 
       
-        function dragOver(e) {
+        function dragOverColumn(e) {
             e.preventDefault();
 
             const draggedBefore = getDragAfterElement(this, e.clientY);
@@ -219,12 +222,10 @@
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
         
-        function dragEnter(e) {
+        function dragEnterColumn(e) {
             e.preventDefault();
         }
         
-        function dragLeave() {
-        }
         
         function drop(e) {
             const draggedBefore = getDragAfterElement(this, e.clientY);
@@ -352,7 +353,6 @@
             body.style.borderColor = 'hsl(120, 100%, 0%)'; // Change border color to another hue
             }, borderSpeed * 1500);            
         }
-
 
     </script>
 </body>
