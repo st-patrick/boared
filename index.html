@@ -1,8 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered!"))
+        .catch((err) => console.log("Service Worker registration failed:", err));
+    }
+    </script>
+
+
     <title>Trello-style MVP</title>
     <style>
+        :root {
+            color-scheme: light dark;
+        }
+
         .column {
             display: flex;
             width: 200px;
@@ -19,19 +35,18 @@
             margin-bottom: 10px;
             padding: 10px;
             padding-bottom: 30px;
-            background-color: #fff;
+            background-color: light-dark(white,#184050);
             border: 1px solid #ccc;
             border-radius: 5px;
+            box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.1); 
         }
 
         .placeholder {
             margin-bottom: 10px;
-            padding: 10px;
-            background-color: red;
-            border: 2px dotted black;
+            background-color: #abcd;
+            border: 2px dashed black;
             border-radius: 5px;      
             pointer-events: none;
-            height: 30px;
         }
 
         body {
@@ -41,12 +56,12 @@
             min-width: calc(100vw - 20px);
             min-height: calc(100vh - 20px);
             margin:0;
+            background-color: light-dark(#9bd1d1, #005858);
+            color: light-dark(#333, white);
         }
 
         .dragging {
-            animation: begindrag .8s ease forwards;
-            border: 2px solid red;
-            transform: rotate(0.2turn);
+            /*animation: begindrag .8s ease forwards;*/
         }
 
         @keyframes begindrag {
@@ -73,16 +88,19 @@
         .drag-placeholder {
             position: fixed;
             display: none;
-            background-color: #fff;
+            background-color: light-dark(white,#184050);
             padding: 10px;
             border-radius: 5px;
             pointer-events: none;
+            border: 2px solid maroon;
+            transform: rotate(-0.01turn);
+            box-shadow: 0px 5px 28px 0px rgba(0,0,0,0.76); 
         }
     </style>
 </head>
 
 
-<body style="background-color: aqua;">
+<body>
     <div class="container" style="display: flex; flex-direction: row; width: 100%;">
         <button class="add-card-button" onclick="addCard()">+</button>
 
@@ -173,8 +191,6 @@
         }
 
         function dragEndUniversal() {
-            console.log(DRAG_PLACEHOLDER.offsetHeight);
-            console.log(DRAG_PLACEHOLDER.offsetWidth);
             DRAG_PLACEHOLDER.style.display = 'none';
             PLACEHOLDER.style.display = 'none';
             draggedItem.style.display = 'block';
@@ -186,8 +202,12 @@
         function dragStart() {
             draggedItem = this;
             DRAG_PLACEHOLDER.classList.add('dragging');
-            DRAG_PLACEHOLDER.style.height = draggedItem.offsetHeight-20 + 'px';
-            DRAG_PLACEHOLDER.style.width = draggedItem.offsetWidth-20 + 'px';
+            const placeholderHeight =  draggedItem.offsetHeight;
+            DRAG_PLACEHOLDER.style.height = placeholderHeight - 20 + 'px';
+            PLACEHOLDER.style.height = placeholderHeight - 4 + 'px';
+            const placeholderWidth = draggedItem.offsetWidth;
+            DRAG_PLACEHOLDER.style.width = placeholderWidth - 20 + 'px';
+            PLACEHOLDER.style.width = placeholderWidth - 4 + 'px';
             mouseToDraggedItemOffsetX = event.clientX - draggedItem.getBoundingClientRect().left;
             mouseToDraggedItemOffsetY = event.clientY - draggedItem.getBoundingClientRect().top;
             console.log(DRAG_PLACEHOLDER.style.height);
